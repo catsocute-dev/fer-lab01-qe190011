@@ -1,13 +1,30 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeOff } from "lucide-react"
 import { Background } from "@/components/Background"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { loginSchema, type LoginFormData } from "@/lib/validations"
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  const onSubmit = (data: LoginFormData) => {
+    console.log("Login data:", data)
+    navigate("/home")
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -21,7 +38,7 @@ export const Login = () => {
           </div>
 
           {/* Login Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <h1 className="text-3xl font-bold text-blue-900 mb-6">Login</h1>
 
             {/* Email Input */}
@@ -33,8 +50,14 @@ export const Login = () => {
                 id="email"
                 type="email"
                 placeholder="username@gmail.com"
-                className="bg-white border-gray-300"
+                className={`bg-white border-gray-300 ${
+                  errors.email ? "border-red-500" : ""
+                }`}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -47,7 +70,10 @@ export const Login = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="bg-white border-gray-300 pr-10"
+                  className={`bg-white border-gray-300 pr-10 ${
+                    errors.password ? "border-red-500" : ""
+                  }`}
+                  {...register("password")}
                 />
                 <button
                   type="button"
@@ -61,6 +87,9 @@ export const Login = () => {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Forgot Password */}
@@ -74,7 +103,10 @@ export const Login = () => {
             </div>
 
             {/* Sign In Button */}
-            <Button className="w-full bg-blue-900 hover:bg-blue-800 text-white h-11 text-base">
+            <Button
+              type="submit"
+              className="w-full bg-blue-900 hover:bg-blue-800 text-white h-11 text-base"
+            >
               Sign in
             </Button>
 
@@ -140,7 +172,7 @@ export const Login = () => {
                 Register for free
               </Link>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

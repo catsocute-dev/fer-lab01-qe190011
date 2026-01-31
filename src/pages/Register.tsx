@@ -1,14 +1,31 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeOff } from "lucide-react"
 import { Background } from "@/components/Background"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { registerSchema, type RegisterFormData } from "@/lib/validations"
 
 export const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const navigate = useNavigate()
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+  })
+
+  const onSubmit = (data: RegisterFormData) => {
+    console.log("Register data:", data)
+    navigate("/home")
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -22,7 +39,7 @@ export const Register = () => {
           </div>
 
           {/* Register Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <h1 className="text-3xl font-bold text-blue-900 mb-6">Register</h1>
 
             {/* Name Input */}
@@ -34,8 +51,14 @@ export const Register = () => {
                 id="name"
                 type="text"
                 placeholder="John Doe"
-                className="bg-white border-gray-300"
+                className={`bg-white border-gray-300 ${
+                  errors.name ? "border-red-500" : ""
+                }`}
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
             </div>
 
             {/* Email Input */}
@@ -47,8 +70,14 @@ export const Register = () => {
                 id="email"
                 type="email"
                 placeholder="username@gmail.com"
-                className="bg-white border-gray-300"
+                className={`bg-white border-gray-300 ${
+                  errors.email ? "border-red-500" : ""
+                }`}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -61,7 +90,10 @@ export const Register = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="bg-white border-gray-300 pr-10"
+                  className={`bg-white border-gray-300 pr-10 ${
+                    errors.password ? "border-red-500" : ""
+                  }`}
+                  {...register("password")}
                 />
                 <button
                   type="button"
@@ -75,6 +107,9 @@ export const Register = () => {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Confirm Password Input */}
@@ -87,7 +122,10 @@ export const Register = () => {
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
-                  className="bg-white border-gray-300 pr-10"
+                  className={`bg-white border-gray-300 pr-10 ${
+                    errors.confirmPassword ? "border-red-500" : ""
+                  }`}
+                  {...register("confirmPassword")}
                 />
                 <button
                   type="button"
@@ -101,10 +139,16 @@ export const Register = () => {
                   )}
                 </button>
               </div>
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+              )}
             </div>
 
             {/* Sign Up Button */}
-            <Button className="w-full bg-blue-900 hover:bg-blue-800 text-white h-11 text-base">
+            <Button
+              type="submit"
+              className="w-full bg-blue-900 hover:bg-blue-800 text-white h-11 text-base"
+            >
               Sign up
             </Button>
 
@@ -170,7 +214,7 @@ export const Register = () => {
                 Sign in
               </Link>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
