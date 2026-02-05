@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   Card,
   CardContent,
@@ -13,6 +14,7 @@ interface ProductCardProps {
   description: string
   price: number
   onClick?: () => void
+  onAddToCart?: (quantity: number) => void
 }
 
 export const ProductCard = ({
@@ -21,14 +23,33 @@ export const ProductCard = ({
   description,
   price,
   onClick,
+  onAddToCart,
 }: ProductCardProps) => {
+  const [quantity, setQuantity] = useState(1)
+
   const formattedPrice = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   }).format(price)
 
+  const handleDecrease = () => {
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
+  }
+
+  const handleIncrease = () => {
+    setQuantity((prev) => prev + 1)
+  }
+
+  const handleAddToCart = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+
+    if (onAddToCart) {
+      onAddToCart(quantity)
+    }
+  }
+
   return (
-    <Card 
+    <Card
       className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full cursor-pointer"
       onClick={onClick}
     >
@@ -45,16 +66,37 @@ export const ProductCard = ({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="mt-auto pt-0">
+      <CardContent className="mt-auto pt-0 space-y-3">
         <div className="flex items-center justify-between gap-4">
           <p className="text-2xl font-bold text-blue-900">{formattedPrice}</p>
-          <Button 
-            className="bg-blue-900 hover:bg-blue-800 text-white whitespace-nowrap"
-            onClick={(e) => e.stopPropagation()}
+          {/* Quantity selector */}
+          <div
+            className="flex items-center rounded-full border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm"
+            onClick={(event) => event.stopPropagation()}
           >
-            Buy
-          </Button>
+            <button
+              type="button"
+              className="px-2 text-gray-600 hover:text-gray-900"
+              onClick={handleDecrease}
+            >
+              -
+            </button>
+            <span className="w-8 text-center text-gray-900">{quantity}</span>
+            <button
+              type="button"
+              className="px-2 text-gray-600 hover:text-gray-900"
+              onClick={handleIncrease}
+            >
+              +
+            </button>
+          </div>
         </div>
+        <Button
+          className="w-full bg-blue-900 hover:bg-blue-800 text-white whitespace-nowrap"
+          onClick={handleAddToCart}
+        >
+          Add to cart
+        </Button>
       </CardContent>
     </Card>
   )

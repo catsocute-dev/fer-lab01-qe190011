@@ -9,8 +9,11 @@ import {
 } from "@/components/ui/dialog"
 import { ProductCard } from "@/components/ProductCard"
 import { products, type Product } from "@/data/products"
+import { CartIcon } from "@/components/CartIcon"
+import { useCartContext } from "@/contexts/CartContext"
 
 export const Home = () => {
+  const { addToCart } = useCartContext()
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -37,7 +40,7 @@ export const Home = () => {
               <h1 className="text-2xl font-bold text-blue-900">Your logo</h1>
             </Link>
 
-            {/* Navigation Buttons */}
+            {/* Navigation Buttons + Cart */}
             <div className="flex items-center gap-4">
               <Button
                 asChild
@@ -52,6 +55,7 @@ export const Home = () => {
               >
                 <Link to="/register">Register</Link>
               </Button>
+              <CartIcon />
             </div>
           </div>
         </div>
@@ -79,6 +83,17 @@ export const Home = () => {
               description={product.description}
               price={product.price}
               onClick={() => handleProductClick(product)}
+              onAddToCart={(quantity) =>
+                addToCart(
+                  {
+                    productId: product.id,
+                    name: product.name,
+                    image: product.image,
+                    price: product.price,
+                  },
+                  quantity,
+                )
+              }
             />
           ))}
         </div>
@@ -180,8 +195,21 @@ export const Home = () => {
                       {formattedPrice(selectedProduct.price)}
                     </p>
                   </div>
-                  <Button className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-6 text-lg">
-                    Buy Now
+                  <Button
+                    className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-6 text-lg"
+                    onClick={() =>
+                      addToCart(
+                        {
+                          productId: selectedProduct.id,
+                          name: selectedProduct.name,
+                          image: selectedProduct.image,
+                          price: selectedProduct.price,
+                        },
+                        1,
+                      )
+                    }
+                  >
+                    Add to cart
                   </Button>
                 </div>
               </div>
