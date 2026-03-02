@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, type FieldErrors } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -138,6 +138,14 @@ export const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
       {/* Register-only fields */}
       {!isLogin && (
         <>
+          {/*
+            TypeScript không biết chắc chắn rằng errors có field name/confirmPassword
+            khi form dùng union type, nên cần thu hẹp kiểu cho phần register-only.
+          */}
+          {(() => {
+            const registerErrors = errors as FieldErrors<RegisterFormData>
+            return (
+              <>
           {/* Full name */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-blue-900 font-medium">
@@ -148,13 +156,13 @@ export const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
               type="text"
               placeholder="John Doe"
               className={`bg-white border-gray-300 ${
-                errors.name ? "border-red-500" : ""
+                registerErrors.name ? "border-red-500" : ""
               }`}
               {...register("name")}
             />
-            {errors.name && (
+            {registerErrors.name && (
               <p className="text-sm text-red-500">
-                {errors.name.message as string}
+                {registerErrors.name.message as string}
               </p>
             )}
           </div>
@@ -173,7 +181,7 @@ export const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 className={`bg-white border-gray-300 pr-10 ${
-                  errors.confirmPassword ? "border-red-500" : ""
+                  registerErrors.confirmPassword ? "border-red-500" : ""
                 }`}
                 {...register("confirmPassword")}
               />
@@ -191,12 +199,15 @@ export const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
                 )}
               </button>
             </div>
-            {errors.confirmPassword && (
+            {registerErrors.confirmPassword && (
               <p className="text-sm text-red-500">
-                {errors.confirmPassword.message as string}
+                {registerErrors.confirmPassword.message as string}
               </p>
             )}
           </div>
+              </>
+            )
+          })()}
         </>
       )}
 
