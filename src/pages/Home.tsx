@@ -11,9 +11,12 @@ import { ProductCard } from "@/components/ProductCard"
 import { products, type Product } from "@/data/products"
 import { CartIcon } from "@/components/CartIcon"
 import { useCartContext } from "@/contexts/CartContext"
+import { useAuth } from "@/contexts/AuthContext"
+import { ROUTE_LOGIN, ROUTE_ORDERS, ROUTE_REGISTER } from "@/constants/routes"
 
 export const Home = () => {
   const { addToCart } = useCartContext()
+  const { user, signOut } = useAuth()
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -42,19 +45,45 @@ export const Home = () => {
 
             {/* Navigation Buttons + Cart */}
             <div className="flex items-center gap-4">
-              <Button
-                asChild
-                variant="outline"
-                className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
-              >
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button
-                asChild
-                className="bg-blue-900 hover:bg-blue-800 text-white"
-              >
-                <Link to="/register">Register</Link>
-              </Button>
+              {user ? (
+                <>
+                  <span className="text-sm text-gray-700">
+                    Hi, <span className="font-semibold">{user.email}</span>
+                  </span>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
+                  >
+                    <Link to={ROUTE_ORDERS}>Orders</Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      void signOut()
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
+                  >
+                    <Link to={ROUTE_LOGIN}>Login</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="bg-blue-900 hover:bg-blue-800 text-white"
+                  >
+                    <Link to={ROUTE_REGISTER}>Register</Link>
+                  </Button>
+                </>
+              )}
               <CartIcon />
             </div>
           </div>

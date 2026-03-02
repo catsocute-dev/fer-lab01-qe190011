@@ -1,30 +1,19 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Eye, EyeOff } from "lucide-react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Background } from "@/components/Background"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { loginSchema, type LoginFormData } from "@/lib/validations"
+import { AuthForm } from "@/components/AuthForm"
+import { ROUTE_HOME, ROUTE_REGISTER } from "@/constants/routes"
 
 export const Login = () => {
-  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  })
-
-  const onSubmit = (data: LoginFormData) => {
-    console.log("Login data:", data)
-    navigate("/home")
+  const location = useLocation() as {
+    state?: { redirectTo?: string }
   }
+
+  const redirectTo =
+    location.state?.redirectTo && typeof location.state.redirectTo === "string"
+      ? location.state.redirectTo
+      : ROUTE_HOME
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -37,78 +26,12 @@ export const Login = () => {
             <h2 className="text-2xl font-bold text-blue-900">Your logo</h2>
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <h1 className="text-3xl font-bold text-blue-900 mb-6">Login</h1>
-
-            {/* Email Input */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-blue-900 font-medium">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="username@gmail.com"
-                className={`bg-white border-gray-300 ${
-                  errors.email ? "border-red-500" : ""
-                }`}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
-              )}
-            </div>
-
-            {/* Password Input */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-blue-900 font-medium">
-                Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  className={`bg-white border-gray-300 pr-10 ${
-                    errors.password ? "border-red-500" : ""
-                  }`}
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
-              )}
-            </div>
-
-            {/* Forgot Password */}
-            <div className="text-right">
-              <Link
-                to="#"
-                className="text-sm text-blue-700 hover:text-blue-900 hover:underline"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-
-            {/* Sign In Button */}
-            <Button
-              type="submit"
-              className="w-full bg-blue-900 hover:bg-blue-800 text-white h-11 text-base"
-            >
-              Sign in
-            </Button>
+          <AuthForm
+            mode="login"
+            onSuccess={() => {
+              navigate(redirectTo)
+            }}
+          />
 
             {/* Separator */}
             <div className="relative flex items-center justify-center gap-3">
@@ -166,13 +89,12 @@ export const Login = () => {
             <div className="text-center text-sm text-white font-medium">
               Don't have an account yet?{" "}
               <Link
-                to="/register"
+                to={ROUTE_REGISTER}
                 className="text-blue-200 font-bold hover:text-white hover:underline"
               >
                 Register for free
               </Link>
             </div>
-          </form>
         </div>
       </div>
     </div>

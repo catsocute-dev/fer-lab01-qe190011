@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { CartItem } from "@/components/CartItem"
 import { useCartContext } from "@/contexts/CartContext"
+import { useAuth } from "@/contexts/AuthContext"
+import { ROUTE_CHECKOUT, ROUTE_LOGIN } from "@/constants/routes"
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -18,9 +20,22 @@ export const Cart = () => {
     getTotalItems,
     getTotalPrice,
   } = useCartContext()
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
+
+  const handleCheckoutClick = () => {
+    if (!user) {
+      navigate(ROUTE_LOGIN, {
+        state: { redirectTo: ROUTE_CHECKOUT },
+      })
+      return
+    }
+
+    navigate(ROUTE_CHECKOUT)
+  }
 
   if (items.length === 0) {
     return (
@@ -100,7 +115,10 @@ export const Cart = () => {
                 {formatCurrency(totalPrice)}
               </span>
             </div>
-            <Button className="w-full bg-blue-900 hover:bg-blue-800 text-white">
+            <Button
+              className="w-full bg-blue-900 hover:bg-blue-800 text-white"
+              onClick={handleCheckoutClick}
+            >
               Checkout
             </Button>
           </aside>
