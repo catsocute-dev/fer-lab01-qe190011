@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,12 +13,41 @@ import { CartIcon } from "@/components/CartIcon"
 import { useCartContext } from "@/contexts/CartContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { ROUTE_LOGIN, ROUTE_ORDERS, ROUTE_REGISTER } from "@/constants/routes"
+import { getOrdersByUser } from "@/services/order.service"
 
 export const Home = () => {
   const { addToCart } = useCartContext()
   const { user, signOut } = useAuth()
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [orderCount, setOrderCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!user) {
+      setOrderCount(null)
+      return
+    }
+
+    let isMounted = true
+
+    const fetchOrderCount = async () => {
+      const result = await getOrdersByUser(user.id)
+
+      if (!isMounted) {
+        return
+      }
+
+      if (result.data) {
+        setOrderCount(result.data.length)
+      }
+    }
+
+    void fetchOrderCount()
+
+    return () => {
+      isMounted = false
+    }
+  }, [user])
 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product)
@@ -55,7 +84,10 @@ export const Home = () => {
                     variant="outline"
                     className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
                   >
-                    <Link to={ROUTE_ORDERS}>Orders</Link>
+                    <Link to={ROUTE_ORDERS}>
+                      Orders
+                      {orderCount !== null ? ` (${orderCount})` : ""}
+                    </Link>
                   </Button>
                   <Button
                     variant="outline"

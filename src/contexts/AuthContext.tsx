@@ -7,6 +7,7 @@ import {
 } from "react"
 import type { Session, User } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabaseClient"
+import { ROUTE_LOGIN } from "@/constants/routes"
 import {
   MESSAGE_AUTH_LOGIN_FAILED,
   MESSAGE_AUTH_REGISTER_FAILED,
@@ -84,9 +85,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const signUp = async (email: string, password: string): Promise<AuthResult> => {
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}${ROUTE_LOGIN}`
+        : undefined
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: redirectTo ? { emailRedirectTo: redirectTo } : undefined,
     })
 
     if (error) {
