@@ -5,11 +5,7 @@ import {
   MESSAGE_COMMON_UNKNOWN_ERROR,
 } from "@/constants/messages"
 import type { CreateOrderPayload, Order } from "@/types/order"
-
-interface ServiceResult<T> {
-  data: T | null
-  errorMessage: string | null
-}
+import type { ServiceResult } from "@/types/service"
 
 export const createOrder = async (
   payload: CreateOrderPayload,

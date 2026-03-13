@@ -21,3 +21,18 @@ export const MESSAGE_ORDER_HISTORY_EMPTY = "You have no orders yet."
 export const MESSAGE_COMMON_UNKNOWN_ERROR =
   "Something went wrong. Please try again."
 
+export const MESSAGE_CHAT_LOAD_FAILED =
+  "Failed to load chat messages. Please try again."
+
+export const MESSAGE_CHAT_SEND_FAILED =
+  "Failed to send message. Please try again."
+
+export const MESSAGE_CHAT_AI_RESPONSE_FAILED =
+  "Failed to generate AI response. Please try again."
+
+export const MESSAGE_CHAT_REALTIMESUB_FAILED =
+  "Failed to subscribe to chat updates. Please try again."
+
+export const MESSAGE_CHAT_GEMINI_CONFIG_MISSING =
+  "Gemini API configuration is missing. Please check environment variables."
+

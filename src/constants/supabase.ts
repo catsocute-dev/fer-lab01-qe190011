@@ -7,3 +7,5 @@ export const SUPABASE_SCHEMA = "public" as const
 
 export const SUPABASE_ORDERS_TABLE = "orders" as const
 
+export const SUPABASE_MESSAGES_TABLE = "messages" as const
+

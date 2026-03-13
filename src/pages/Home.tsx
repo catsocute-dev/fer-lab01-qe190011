@@ -10,6 +10,7 @@ import {
 import { ProductCard } from "@/components/ProductCard"
 import { products, type Product } from "@/data/products"
 import { CartIcon } from "@/components/CartIcon"
+import { ChatInterface } from "@/components/ChatInterface"
 import { useCartContext } from "@/contexts/CartContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { ROUTE_LOGIN, ROUTE_ORDERS, ROUTE_REGISTER } from "@/constants/routes"
@@ -21,6 +22,7 @@ export const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [orderCount, setOrderCount] = useState<number | null>(null)
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -116,6 +118,17 @@ export const Home = () => {
                   </Button>
                 </>
               )}
+              {user && (
+                <Button
+                  variant="outline"
+                  className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
+                  onClick={() => {
+                    setIsChatOpen((prev) => !prev)
+                  }}
+                >
+                  Chat
+                </Button>
+              )}
               <CartIcon />
             </div>
           </div>
@@ -159,6 +172,12 @@ export const Home = () => {
           ))}
         </div>
       </main>
+
+      {user && isChatOpen && (
+        <div className="fixed bottom-4 right-4 z-40 w-full max-w-md">
+          <ChatInterface title="AI Chat Support" />
+        </div>
+      )}
 
       {/* Product Detail Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
